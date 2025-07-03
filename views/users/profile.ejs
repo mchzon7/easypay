@@ -1,0 +1,188 @@
+<%- include('../partials/header', { title: 'User Profile' }) %>
+
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <div class="card">
+        <div class="card-header">
+          <h4>Profile Information</h4>
+        </div>
+        <div class="card-body">
+          <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-danger"><%= error %></div>
+          <% } %>
+          
+          <% if (typeof success !== 'undefined' && success) { %>
+            <div class="alert alert-success"><%= success %></div>
+          <% } %>
+
+          <form action="/users/profile" method="POST">
+            <div class="mb-3">
+              <label for="firstName" class="form-label">First Name</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="firstName" 
+                name="firstName" 
+                value="<%= user.firstName %>" 
+                required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="lastName" class="form-label">Last Name</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="lastName" 
+                name="lastName" 
+                value="<%= user.lastName %>" 
+                required
+              >
+            </div>
+            
+            <div class="mb-3">
+              <label for="email" class="form-label">Email Address</label>
+              <input 
+                type="email" 
+                class="form-control" 
+                id="email" 
+                name="email" 
+                value="<%= user.email %>" 
+                required
+              >
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bank Accounts Section -->
+<div class="card mt-4">
+  <div class="card-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <h4>Bank Accounts</h4>
+      <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addBankModal">
+        Add Bank Account
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+    <% if (user.bankAccounts && user.bankAccounts.length > 0) { %>
+      <div class="list-group">
+        <% user.bankAccounts.forEach(account => { %>
+          <div class="list-group-item">
+            <div class="d-flex justify-content-between">
+              <div>
+                <h6 class="mb-1"><%= account.accountName %></h6>
+                <small class="text-muted">
+                  <%= account.accountNumber %> • 
+                  <%= getBankName(account.bankCode) %>
+                </small>
+              </div>
+              <div>
+                <% if (account.isDefault) { %>
+                  <span class="badge bg-success me-2">Default</span>
+                <% } else { %>
+                  <form action="/users/bank-accounts/default/<%= account._id %>" 
+                        method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-outline-success me-2">
+                      Set Default
+                    </button>
+                  </form>
+                <% } %>
+                <form action="/users/bank-accounts/<%= account._id %>" 
+                      method="POST" class="d-inline">
+                  <input type="hidden" name="_method" value="DELETE">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">
+                    Delete
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p>No bank accounts added yet.</p>
+    <% } %>
+  </div>
+</div>
+
+<!-- Add Bank Account Modal -->
+<div class="modal fade" id="addBankModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Bank Account</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form action="/users/bank-accounts" method="POST">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="bankCode" class="form-label">Bank</label>
+            <select class="form-select" id="bankCode" name="bankCode" required>
+              <option value="">Select Bank</option>
+              <option value="033">United Bank for Africa (UBA)</option>
+              <option value="063">Access Bank</option>
+              <option value="050">Ecobank Nigeria</option>
+              <option value="070">Fidelity Bank</option>
+              <option value="011">First Bank of Nigeria</option>
+              <option value="214">First City Monument Bank (FCMB)</option>
+              <option value="058">Guaranty Trust Bank (GTB)</option>
+              <option value="030">Heritage Bank</option>
+              <option value="301">Jaiz Bank</option>
+              <option value="082">Keystone Bank</option>
+              <option value="076">Polaris Bank</option>
+              <option value="101">Providus Bank</option>
+              <option value="221">Stanbic IBTC Bank</option>
+              <option value="068">Standard Chartered Bank</option>
+              <option value="232">Sterling Bank</option>
+              <option value="100">Suntrust Bank</option>
+              <option value="032">Union Bank of Nigeria</option>
+              <option value="215">Unity Bank</option>
+              <option value="035">Wema Bank</option>
+              <option value="057">Zenith Bank</option>
+            </select>
+            </div>
+          <div class="mb-3">
+            <label for="accountNumber" class="form-label">Account Number</label>
+            <input type="text" class="form-control" id="accountNumber" name="accountNumber" required>
+          </div>
+          <div class="mb-3">
+            <label for="accountName" class="form-label">Account Name</label>
+            <input type="text" class="form-control" id="accountName" name="accountName" placeholder="account name" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+// Auto-fetch account name when account number changes
+document.getElementById('accountNumber').addEventListener('blur', function() {
+  const bankCode = document.getElementById('bankCode').value;
+  const accountNumber = this.value;
+  
+  if (bankCode && accountNumber && accountNumber.length === 10) {
+    fetch(`/payments/resolve-account?bankCode=${bankCode}&accountNumber=${accountNumber}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.accountName) {
+          document.getElementById('accountName').value = data.accountName;
+        }
+      })
+      .catch(error => console.error('Error:', error));
+  }
+});
+</script>
+
+<%- include('../partials/footer') %>

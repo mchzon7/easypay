@@ -1,0 +1,50 @@
+<%- include('./partials/header', { title: 'Paystack Payment Gateway' }) %>
+
+<div class="hero-section bg-primary text-white py-5">
+    <div class="container text-center">
+        <h1 class="display-4">Welcome to Paystack Gateway</h1>
+        <p class="lead">Secure, fast and reliable payment processing</p>
+        <div class="mt-4">
+            <% if (!locals.user) { %>
+                <a href="/auth/register" class="btn btn-light btn-lg me-3">Sign Up</a>
+                <a href="/auth/login" class="btn btn-outline-light btn-lg">Login</a>
+            <% } else { %>
+                <a href="/users/dashboard" class="btn btn-light btn-lg">Go to Dashboard</a>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row text-center">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="bi bi-credit-card fs-1 text-primary"></i>
+                    <h3 class="card-title">Virtual Cards</h3>
+                    <p class="card-text">Create virtual cards for secure online payments and subscriptions.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="bi bi-arrow-left-right fs-1 text-primary"></i>
+                    <h3 class="card-title">Money Transfers</h3>
+                    <p class="card-text">Send and receive money instantly to any bank account or user.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="bi bi-currency-exchange fs-1 text-primary"></i>
+                    <h3 class="card-title">Currency Conversion</h3>
+                    <p class="card-text">Convert between multiple currencies at competitive rates.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('./partials/footer') %>

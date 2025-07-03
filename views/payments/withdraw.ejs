@@ -1,0 +1,112 @@
+<%- include('../partials/header', { title: 'Withdraw Funds' }) %>
+
+  <div class="container mt-4">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h4>Withdraw Funds</h4>
+          </div>
+          <div class="card-body">
+            <% if (user && user.bankAccounts && user.bankAccounts.length> 0) { %>
+              <form action="/payments/withdraw" method="POST">
+                <!-- Display flash messages -->
+            <% if (success) { %>
+              <div style="color: green;">
+                <%= success %>
+              </div>
+              <% } %>
+                <% if (error) { %>
+                  <div style="color: red;">
+                    <%= error %>
+                  </div>
+                  <% } %>
+                <div class="mb-3">
+                  <label for="amount" class="form-label">Amount (NGN)</label>
+                  <input type="number" class="form-control" id="amount" name="amount" min="100"
+                      required >
+                  <small class="text-muted">
+                    Available balance: ₦<%= user.balance.toLocaleString() %>
+                      <% if (user.balance <=0) { %>
+                        <span class="text-danger">(Insufficient balance)</span>
+                        <% } %>
+                  </small>
+                  <div id="amountError" class="invalid-feedback"></div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Select Bank Account</label>
+                  <% user.bankAccounts.forEach(account=> { %>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="accountNumber" id="account-<%= account._id %>"
+                        value="<%= account.accountNumber %>" <%=account.isDefault ? 'checked' : '' %>
+                      required
+                      >
+                      <label class="form-check-label" for="account-<%= account._id %>">
+                        <%= account.accountName %> - <%= account.accountNumber %>
+                            <% if (account.isDefault) { %>
+                              <span class="badge bg-success">Default</span>
+                              <% } %>
+                      </label>
+                    </div>
+                    <% }); %>
+                </div>
+
+                <input type="hidden" name="bankCode" value="<%= user.bankAccounts.find(a => a.isDefault)?.bankCode %>">
+
+                <button type="submit" class="btn btn-primary w-100">Withdraw</button>
+              </form>
+              <% } else { %>
+                <div class="alert alert-warning">
+                  <% if (!user) { %>
+                    <p>User information not available. Please login again.</p>
+                    <% } else if (!user.bankAccounts || user.bankAccounts.length===0) { %>
+                      <p>You don't have any bank accounts added.</p>
+                      <% } %>
+                </div>
+                <a href="/users/profile" class="btn btn-outline-primary">Add Bank Account</a>
+                <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function validateAmount(input) {
+      const amount = parseFloat(input.value);
+      const maxAmount = parseFloat(input.max);
+      const errorElement = document.getElementById('amountError');
+
+      if (isNaN(amount)){
+        input.classList.add('is-invalid');
+        errorElement.textContent = 'Please enter a valid number';
+        return false;
+      }
+
+      if (amount < 100) {
+        input.classList.add('is-invalid');
+        errorElement.textContent = 'Minimum withdrawal is ₦100';
+        return false;
+      }
+
+      if (amount > maxAmount) {
+        input.classList.add('is-invalid');
+        errorElement.textContent = `Amount cannot exceed ₦${ maxAmount.toLocaleString() }`;
+        return false;
+      }
+
+      input.classList.remove('is-invalid');
+      return true;
+    }
+
+    // Validate form before submission
+    document.querySelector('form').addEventListener('submit', function (e) {
+      const amountInput = document.getElementById('amount');
+      if (!validateAmount(amountInput)) {
+        e.preventDefault();
+      }
+    });
+  </script>
+
+  <%- include('../partials/footer') %>

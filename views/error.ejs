@@ -1,0 +1,15 @@
+<%- include('./partials/header', { title: 'Error' }) %>
+
+<div class="container mt-5">
+  <div class="alert alert-danger">
+    <h4 class="alert-heading">Error</h4>
+    <p><%= error %></p>
+    <hr>
+    <p class="mb-0">
+      <a href="/" class="alert-link">Return to Home</a> or 
+      <a href="javascript:history.back()" class="alert-link">Go Back</a>
+    </p>
+  </div>
+</div>
+
+<%- include('./partials/footer') %>

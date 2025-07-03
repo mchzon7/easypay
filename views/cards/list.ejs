@@ -1,0 +1,74 @@
+<%- include('../partials/header', { title: 'Your Virtual Cards' }) %>
+
+  <div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Your Virtual Cards</h2>
+      <a href="/cards/create" class="btn btn-primary">Create New Card</a>
+    </div>
+
+    <% if (cards.length> 0) { %>
+      <div class="row">
+        <% cards.forEach(card=> { %>
+          <div class="col-md-4 mb-4">
+            <div class="card h-100 <%= card.isActive ? 'border-success' : 'border-danger' %>">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="badge bg-<%= card.isActive ? 'success' : 'danger' %>">
+                  <%= card.isActive ? 'ACTIVE' : 'INACTIVE' %>
+                </span>
+                <div class="dropdown">
+                  <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                    data-bs-toggle="dropdown">
+                    Actions
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <form action="/cards/card/<%= card._id %>/status?" method="POST" class="d-inline me-2">
+                        <button type="submit" class="btn btn-sm <%= card.isActive ? 'btn-warning' : 'btn-success' %>">
+                          <%= card.isActive ? 'Deactivate' : 'Activate' %>
+                        </button>
+                      </form>
+                    </li>
+                    <li>
+                      <a href="/cards/card/<%= card._id %>" class="dropdown-item">View Details</a>
+                    </li>
+                    <li>
+                      <form action="/cards/card/<%= card._id %>?_method=DELETE" method="post" class="d-inline">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                      </form>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="card-body">
+                <h5 class="card-title text-uppercase">
+                  <%= card.cardType %>
+                </h5>
+                <p class="card-text">
+                  <span class="text-muted">** ** <%= card.cardNumber.slice(-4) %></span><br>
+                  <small>Exp: <%= card.expiryMonth %>/<%= card.expiryYear %></small>
+                </p>
+                <p class="h5">
+                  <%= card.currency %>
+                    <%= card.balance.toFixed(2) %>
+                </p>
+              </div>
+              <div class="card-footer bg-transparent">
+                <form action="/cards/<%= card._id %>/fund" method="POST" class="input-group">
+                  <input type="number" class="form-control" name="amount" placeholder="Amount" min="1"
+                    max="<%= user.balance %>" step="0.01">
+                  <button class="btn btn-outline-primary" type="submit">Fund</button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <% }); %>
+      </div>
+      <% } else { %>
+        <div class="alert alert-info">
+          You don't have any virtual cards yet. Create your first card now!
+        </div>
+        <% } %>
+  </div>
+
+  <%- include('../partials/footer') %>

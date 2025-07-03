@@ -1,0 +1,109 @@
+<%- include('../partials/header', { title: 'Send Money' }) %>
+
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header bg-info text-white">
+          <h4>Send Money</h4>
+        </div>
+        <div class="card-body">
+          <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-danger"><%= error %></div>
+          <% } %>
+          
+          <% if (user && typeof user.balance !== 'undefined') { %>
+            <form action="/payments/send" method="POST">
+                <!-- Display flash messages -->
+            <% if (success) { %>
+              <div style="color: green;">
+                <%= success %>
+              </div>
+              <% } %>
+                <% if (error) { %>
+                  <div style="color: red;">
+                    <%= error %>
+                  </div>
+                  <% } %>
+              <div class="mb-3">
+                <label for="email" class="form-label">Recipient Email</label>
+                <input 
+                  type="email" 
+                  class="form-control" 
+                  id="email" 
+                  name="email" 
+                  required
+                  value="<%= typeof email !== 'undefined' ? email : '' %>"
+                >
+              </div>
+              <div class="mb-3">
+                <label for="amount" class="form-label">Amount (NGN)</label>
+                <input 
+                  type="number" 
+                  class="form-control" 
+                  id="amount" 
+                  name="amount" 
+                  min="1" 
+                  max="<%= user.balance %>" 
+                  step="1"
+                  required
+                  oninput="validateAmount(this)"
+                >
+                <small class="text-muted">
+                  Available balance: ₦<%= user.balance.toLocaleString() %>
+                  <% if (user.balance <= 0) { %>
+                    <span class="text-danger">(Insufficient balance)</span>
+                  <% } %>
+                </small>
+                <div id="amountError" class="invalid-feedback"></div>
+              </div>
+              <button type="submit" class="btn btn-info w-100">Send Money</button>
+            </form>
+          <% } else { %>
+            <div class="alert alert-danger">
+              User balance information not available. Please try again later.
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function validateAmount(input) {
+  const amount = parseFloat(input.value);
+  const maxAmount = parseFloat(input.max);
+  const errorElement = document.getElementById('amountError');
+  
+  if (isNaN(amount)) {
+    input.classList.add('is-invalid');
+    errorElement.textContent = 'Please enter a valid number';
+    return false;
+  }
+  
+  if (amount < 1) {
+    input.classList.add('is-invalid');
+    errorElement.textContent = 'Minimum amount is ₦1';
+    return false;
+  }
+  
+  if (amount > maxAmount) {
+    input.classList.add('is-invalid');
+    errorElement.textContent = `Amount cannot exceed ₦${maxAmount.toLocaleString()}`;
+    return false;
+  }
+  
+  input.classList.remove('is-invalid');
+  return true;
+}
+
+document.querySelector('form').addEventListener('submit', function(e) {
+  const amountInput = document.getElementById('amount');
+  if (!validateAmount(amountInput)) {
+    e.preventDefault();
+  }
+});
+</script>
+
+<%- include('../partials/footer') %>

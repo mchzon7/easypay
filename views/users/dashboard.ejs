@@ -1,0 +1,140 @@
+Abubakar Muhammad, [6/28/2025 10:39 PM]
+<%- include('../partials/header', { title: 'Dashboard' }) %>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card text-white bg-primary">
+                <div class="card-header">Account Balance</div>
+                <div class="card-body">
+                    <h2 class="card-title"><%= user.currency %> <%= user.balance.toLocaleString() %></h2>
+                    <div class="d-flex justify-content-between mt-3">
+                        <a href="/payments/deposit" class="btn btn-light btn-sm">Deposit</a>
+                        <a href="/payments/withdraw" class="btn btn-light btn-sm">Withdraw</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card text-white bg-success">
+                <div class="card-header">Quick Actions</div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="/payments/send" class="btn btn-light btn-sm">Send Money</a>
+                        <a href="/cards/create" class="btn btn-light btn-sm">Create Virtual Card</a>
+                        <a href="/transactions" class="btn btn-light btn-sm">View Transactions</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card text-white bg-info">
+                <div class="card-header">Currency Conversion</div>
+                <div class="card-body">
+                    <form action="/payments/convert" method="POST">
+                        <div class="mb-2">
+                            <select class="form-select form-select-sm" name="from" required>
+                                <option value="<%= user.currency %>"><%= user.currency %></option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <select class="form-select form-select-sm" name="to" required>
+                                <% ['NGN', 'USD', 'EUR', 'GBP'].filter(c => c !== user.currency).forEach(currency => { %>
+                                    <option value="<%= currency %>"><%= currency %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <input type="number" class="form-control form-control-sm" 
+                                   name="amount" placeholder="Amount" min="1" max="<%= user.balance %>" required>
+                        </div>
+                        <button type="submit" class="btn btn-light btn-sm w-100">Convert</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">Recent Transactions</div>
+                <div class="card-body">
+                    <% if (transactions.length > 0) { %>
+                        <div class="list-group">
+                            <% transactions.slice(0, 5).forEach(transaction => { %>
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="mb-1 text-capitalize"><%= transaction.type %></h6>
+                                            <small class="text-muted"><%= transaction.formattedDate %></small>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="<%=
+                                            transaction.type === 'deposit' || transaction.type === 'transfer' ? 
+                                                                                            'text-success' : 'text-danger' 
+                                                                                        %>">
+                                                <%= transaction.type==='deposit' || transaction.type==='transfer' ? '+' : '-' %>
+                                                    <%= user.currency %>
+                                                        <%= transaction.amount.toFixed(2) %>
+                                            </span>
+                                            <div>
+                                                <span class="badge bg-<%= 
+                                                    transaction.status === 'completed' ? 'success' : 
+                                                    transaction.status === 'failed' ? 'danger' : 'warning' 
+                                                %>">
+                                                    <%= transaction.status %>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                        <a href="/transactions" class="btn btn-outline-primary btn-sm mt-3">View All Transactions</a>
+                    <% } else { %>
+                        <p>No transactions yet.</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">Your Virtual Cards</div>
+                <div class="card-body">
+                    <% if (cards.length > 0) { %>
+                        <div class="list-group">
+                            <% cards.slice(0, 3).forEach(card => { %>
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6 class="mb-1 text-uppercase"><%= card.cardType %></h6>
+                                            <small class="text-muted"></small>
+                                        </div>
+                                        <div class="text-end">
+                                            <span><%= card.currency %> <%= card.balance.toFixed(2) %></span>
+                                            <div>
+                                                <span class="badge bg-<%= card.isActive ? 'success' : 'danger' %>">
+                                                    <%= card.isActive ? 'ACTIVE' : 'INACTIVE' %>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                        <a href="/cards" class="btn btn-outline-primary btn-sm mt-3">View All Cards</a>
+                    <% } else { %>
+                        <p>No virtual cards yet.</p>
+                        <a href="/cards/create" class="btn btn-primary btn-sm">Create Card</a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

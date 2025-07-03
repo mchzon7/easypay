@@ -1,0 +1,65 @@
+<%- include('../partials/header', { title: 'Card Details' }) %>
+
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <h4>Card Details</h4>
+        <a href="/cards" class="btn btn-outline-secondary">Back to Cards</a>
+      </div>
+    </div>
+    <div class="card-body">
+      <dl class="row">
+        <dt class="col-sm-4">Card Type</dt>
+        <dd class="col-sm-8 text-uppercase"><%= card.cardType %></dd>
+
+        <dt class="col-sm-4">Card Number</dt>
+        <dd class="col-sm-8">**  ** <%= card.cardNumber.slice(-4) %></dd>
+
+        <dt class="col-sm-4">Expiry Date</dt>
+        <dd class="col-sm-8"><%= card.expiryMonth %>/<%= card.expiryYear %></dd>
+
+        <dt class="col-sm-4">Currency</dt>
+        <dd class="col-sm-8"><%= card.currency %></dd>
+
+        <dt class="col-sm-4">Balance</dt>
+        <dd class="col-sm-8"><%= card.currency %> <%= card.balance.toFixed(2) %></dd>
+
+        <dt class="col-sm-4">Status</dt>
+        <dd class="col-sm-8">
+          <span class="badge bg-<%= card.isActive ? 'success' : 'danger' %>">
+            <%= card.isActive ? 'ACTIVE' : 'INACTIVE' %>
+          </span>
+        </dd>
+
+        <dt class="col-sm-4">Created On</dt>
+        <dd class="col-sm-8"><%= card.createdAt.toLocaleDateString() %></dd>
+      </dl>
+
+      <div class="mt-4">
+        <form action="/cards/<%= card._id %>/fund" method="POST" class="row g-3">
+          <div class="col-md-8">
+            <input type="number" class="form-control" name="amount" 
+                   placeholder="Funding amount" min="1" step="0.01" required>
+          </div>
+          <div class="col-md-4">
+            <button type="submit" class="btn btn-primary w-100">Add Funds</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="card-footer">
+      <form action="/cards/card/<%= card._id %>/status?" method="POST" class="d-inline me-2">
+        <button type="submit" class="btn btn-<%= card.isActive ? 'warning' : 'success' %>">
+          <%= card.isActive ? 'Deactivate' : 'Activate' %>
+        </button>
+      </form>
+      <form action="/cards/card/<%= card._id %>?_method=DELETE" method="POST" class="d-inline">
+        <input type="hidden" name="_method" value="DELETE">
+        <button type="submit" class="btn btn-danger">Delete Card</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

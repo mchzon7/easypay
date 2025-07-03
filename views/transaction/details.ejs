@@ -1,0 +1,83 @@
+<%- include('../partials/header', { title: 'Transaction Details' }) %>
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h4>Transaction Details</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Transaction ID</dt>
+                <dd class="col-sm-9"><%= transaction._id %></dd>
+
+                <dt class="col-sm-3">Date</dt>
+                <dd class="col-sm-9"><%= transaction.formattedDate %></dd>
+
+                <dt class="col-sm-3">Type</dt>
+                <dd class="col-sm-9 text-capitalize"><%= transaction.type %></dd>
+
+                <dt class="col-sm-3">Status</dt>
+                <dd class="col-sm-9">
+                    <span class="badge bg-<%= 
+                        transaction.status === 'completed' ? 'success' : 
+                        transaction.status === 'failed' ? 'danger' : 'warning' 
+                    %>">
+                        <%= transaction.status %>
+                    </span>
+                </dd>
+
+                <dt class="col-sm-3">Amount</dt>
+                <dd class="col-sm-9 <%= 
+                    transaction.type === 'deposit' || transaction.type === 'transfer' ? 'text-success' : 'text-danger' 
+                %>">
+                    <%= transaction.type === 'deposit' || transaction.type === 'transfer' ? '+' : '-' %>
+                    <%= currency %> <%= transaction.amount.toFixed(2) %>
+                </dd>
+
+                <% if (transaction.fee > 0) { %>
+                    <dt class="col-sm-3">Fee</dt>
+                    <dd class="col-sm-9 text-danger">- <%= currency %> <%= transaction.fee.toFixed(2) %></dd>
+
+                    <dt class="col-sm-3">Net Amount</dt>
+                    <dd class="col-sm-9 <%= 
+                        transaction.type === 'deposit' || transaction.type === 'transfer' ? 'text-success' : 'text-danger' 
+                    %>">
+                        <%= transaction.type === 'deposit' || transaction.type === 'transfer' ? '+' : '-' %>
+                        <%= currency %> <%= transaction.netAmount.toFixed(2) %>
+                    </dd>
+                <% } %>
+
+                <% if (transaction.recipient) { %>
+                    <dt class="col-sm-3">Recipient</dt>
+                    <dd class="col-sm-9">
+                        <%= transaction.recipient.firstName %> <%= transaction.recipient.lastName %>
+                        (<%= transaction.recipient.email %>)
+                    </dd>
+                <% } %>
+
+                <% if (transaction.sender) { %>
+                    <dt class="col-sm-3">Sender</dt>
+                    <dd class="col-sm-9">
+                        <%= transaction.sender.firstName %> <%= transaction.sender.lastName %>
+                        (<%= transaction.sender.email %>)
+                    </dd>
+                <% } %>
+
+                <% if (transaction.description) { %>
+                    <dt class="col-sm-3">Description</dt>
+                    <dd class="col-sm-9"><%= transaction.description %></dd>
+                <% } %>
+
+                <% if (transaction.reference) { %>
+                    <dt class="col-sm-3">Reference</dt>
+                    <dd class="col-sm-9"><%= transaction.reference %></dd>
+                <% } %>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <a href="/transactions" class="btn btn-outline-secondary">Back to History</a>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

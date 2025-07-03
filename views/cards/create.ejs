@@ -1,0 +1,47 @@
+<%- include('../partials/header', { title: 'Create Virtual Card' }) %>
+
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header bg-dark text-white">
+          <h4>Create Virtual Card</h4>
+        </div>
+        <div class="card-body">
+          <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-danger"><%= error %></div>
+          <% } %>
+          
+          <form action="/cards" method="POST">
+            <div class="mb-3">
+              <label for="currency" class="form-label">Currency</label>
+              <select class="form-select" id="currency" name="currency" required>
+                <option value="NGN">NGN</option>
+                <option value="USD">USD</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="initialAmount" class="form-label">Initial Funding (Optional)</label>
+              <input 
+                type="number" 
+                class="form-control" 
+                id="initialAmount" 
+                name="initialAmount" 
+                min="0" 
+                max="<%= user.balance %>"
+                step="0.01"
+                placeholder="0.00"
+              >
+              <small class="text-muted">
+                Available balance: <%= user.currency %> <%= user.balance.toLocaleString() %>
+              </small>
+            </div>
+            <button type="submit" class="btn btn-dark w-100">Create Card</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

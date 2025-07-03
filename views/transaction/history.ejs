@@ -1,0 +1,63 @@
+<%- include('../partials/header', { title: 'Transaction History' }) %>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Transaction History</h2>
+        <form action="/transactions/filter" method="GET" class="d-flex">
+            <select name="type" class="form-select me-2">
+                <option value="all" <%= selectedType === 'all' ? 'selected' : '' %>>All Transactions</option>
+                <option value="deposit" <%= selectedType === 'deposit' ? 'selected' : '' %>>Deposits</option>
+                <option value="withdrawal" <%= selectedType === 'withdrawal' ? 'selected' : '' %>>Withdrawals</option>
+                <option value="transfer" <%= selectedType === 'transfer' ? 'selected' : '' %>>Transfers</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% transactions.forEach(transaction => { %>
+                    <tr>
+                        <td><%= transaction.formattedDate %></td>
+                        <td>
+                            <%= transaction.type.toUpperCase() %>
+                            <% if (transaction.recipient) { %>
+                                to <%= transaction.recipient.firstName %>
+                            <% } %>
+                            <% if (transaction.sender) { %>
+                                from <%= transaction.sender.firstName %>
+                            <% } %>
+                        </td>
+                        <td class="<%= transaction.type === 'deposit' || transaction.type === 'transfer' ? 'text-success' : 'text-danger' %>">
+                            <%= transaction.type === 'deposit' || transaction.type === 'transfer' ? '+' : '-' %>
+                            <%= currency %> <%= transaction.amount.toFixed(2) %>
+                        </td>
+                        <td>
+                            <span class="badge bg-<%= 
+                                transaction.status === 'completed' ? 'success' : 
+                                transaction.status === 'failed' ? 'danger' : 'warning' 
+                            %>">
+                                <%= transaction.status %>
+                            </span>
+                        </td>
+                        <td>
+                            <a href="/transactions/<%= transaction._id %>" class="btn btn-sm btn-outline-primary">Details</a>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>
