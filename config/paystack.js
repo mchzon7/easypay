@@ -1,4 +1,4 @@
-const paystack = require('paystack-api')(process.env.PAYSTACK_SECRET_KEY);
+const paystack = require('paystack-api')(process.env.PAYSTACK_SECRET_TESTKEY);
 const axios = require('axios');
 
 // Initialize Paystack
@@ -22,7 +22,7 @@ const verifyPayment = async (reference) => {
       `https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`,
       {
         headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_TESTKEY}`,
           'Content-Type': 'application/json'
         }
       }
@@ -56,7 +56,7 @@ const createTransferRecipient = async (data) => {
       data,
       {
         headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_TESTKEY}`,
           'Content-Type': 'application/json'
         }
       }
@@ -75,7 +75,7 @@ const initiateTransfer = async (data) => {
       data,
       {
         headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_TESTKEY}`,
           'Content-Type': 'application/json'
         }
       }

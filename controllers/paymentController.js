@@ -10,7 +10,7 @@ const crypto = require('crypto');
 exports.handlePaystackWebhook = async (req, res) => {
   try {
     // Validate webhook signature
-    const hash = crypto.createHmac('sha512', process.env.PAYSTACK_SECRET_KEY)
+    const hash = crypto.createHmac('sha512', process.env.PAYSTACK_SECRET_TESTKEY)
       .update(JSON.stringify(req.body))
       .digest('hex');
     
@@ -69,7 +69,7 @@ exports.deposit = async (req, res) => {
     
     res.render('payments/deposit', {
       paymentData,
-      paystackPublicKey: process.env.PAYSTACK_PUBLIC_KEY
+      paystackPublicKey: process.env.PAYSTACK_PUBLIC_TESTKEY
     });
   } catch (err) {
     console.error(err);

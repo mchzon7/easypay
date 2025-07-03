@@ -11,7 +11,7 @@ router.get('/deposit', async (req, res) => {
 
  res.render('payments/deposit', {
     user: req.session.user,
-    paystackPublicKey: process.env.PAYSTACK_PUBLIC_KEY
+    paystackPublicKey: process.env.PAYSTACK_PUBLIC_TESTKEY
  });
 
 });
@@ -38,7 +38,7 @@ router.get('/resolve-account', async (req, res) => {
       `https://api.paystack.co/bank/resolve?account_number=${accountNumber}&bank_code=${bankCode}`,
       {
         headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_TESTKEY}`
         }
       }
     );
